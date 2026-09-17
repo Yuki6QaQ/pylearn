@@ -37,6 +37,11 @@ window.CoursePage = {
       <div class="content">${window.Format.codeBlocks(lesson.content || '<p>内容准备中…</p>')}</div>
     `;
 
+        if (window.Exercise) {
+            const exerciseEl = window.Exercise.render(lesson);
+            container.appendChild(exerciseEl);
+        }
+
         window.LessonNav.render(nav, lessons, lesson.id);
         window.ProgressStore.add(lesson.id);
         window.scrollTo({ top: 0, behavior: 'smooth' });
