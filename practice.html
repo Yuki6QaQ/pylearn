@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyLearn · 练习场</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body data-page="practice">
+
+    <div class="mesh-bg" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="glass-nav" id="navRoot"></header>
+
+    <main class="page-wrap">
+        <a href="index.html" class="back-link" id="backLink">
+            <span class="back-arrow">←</span> 返回首页
+        </a>
+        <section class="section fade-up">
+            <div class="section-head">
+                <h2>代码练习场</h2>
+                <p>输入 Python 代码，点击运行查看 print 输出（前端模拟执行）</p>
+            </div>
+            <div class="glass-card practice-card">
+                <label class="practice-label">Python 代码</label>
+                <textarea id="codeInput" class="code-input" rows="12" spellcheck="false">print("Hello, PyLearn!")
+for i in range(3):
+    print("第", i + 1, "行")</textarea>
+                <div class="practice-actions">
+                    <button class="btn btn-primary" id="runCode">▶ 运行</button>
+                    <button class="btn btn-secondary" id="clearCode">清空</button>
+                </div>
+                <label class="practice-label">运行输出</label>
+                <pre class="code-output" id="codeOutput">// 输出将显示在这里</pre>
+            </div>
+        </section>
+    </main>
+
+    <button class="back-top" id="backTop" aria-label="返回顶部">↑</button>
+
+    <script src="js/core/config.js"></script>
+    <script src="js/utils/dom.js"></script>
+    <script src="js/utils/storage.js"></script>
+    <script src="js/utils/format.js"></script>
+    <script src="js/components/theme.js"></script>
+    <script src="js/components/nav.js"></script>
+    <script src="js/pages/practice.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

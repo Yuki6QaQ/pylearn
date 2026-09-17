@@ -1,0 +1,40 @@
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 26px;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    font-size: 0.96rem;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.3s var(--ease-bounce), box-shadow 0.3s, background 0.3s;
+}
+
+.btn-primary {
+    background: var(--primary-grad);
+    color: #fff;
+    box-shadow: 0 8px 28px rgba(124, 108, 255, 0.35);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 14px 36px rgba(124, 108, 255, 0.5);
+}
+
+.btn-secondary {
+    background: var(--glass-bg);
+    color: var(--text-dark);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(8px);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.16);
+}
+
+body.light .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.9);
+}

@@ -1,0 +1,18 @@
+.progress-bar-wrap {
+    height: 12px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+body.light .progress-bar-wrap {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    background: var(--primary-grad);
+    transition: width 0.8s var(--ease-out);
+}

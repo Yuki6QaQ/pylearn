@@ -1,0 +1,27 @@
+.back-top {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 90;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    color: var(--text-dark);
+    font-size: 1.1rem;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: var(--glass-shadow);
+    transition: opacity 0.4s, transform 0.4s var(--ease-bounce);
+}
+
+.back-top.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.back-top:hover {
+    transform: translateY(-4px) scale(1.08);
+}

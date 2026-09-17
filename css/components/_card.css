@@ -1,0 +1,100 @@
+/* 阶段卡 */
+.stage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.stage-card {
+    padding: 20px;
+    border-radius: var(--radius);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    transition: transform 0.35s var(--ease-bounce), box-shadow 0.35s;
+}
+
+.stage-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.stage-card .stage-num {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.5;
+}
+
+.stage-card h3 {
+    font-size: 1rem;
+    margin-top: 6px;
+}
+
+.stage-card p {
+    font-size: 0.82rem;
+    opacity: 0.6;
+    margin-top: 6px;
+}
+
+/* 课程卡 */
+.lesson-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.lesson-card {
+    padding: 22px;
+    border-radius: var(--radius);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    text-decoration: none;
+    color: var(--text-dark);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.35s var(--ease-bounce), box-shadow 0.35s,
+        border-color 0.35s;
+}
+
+.lesson-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(124, 108, 255, 0.12), transparent 60%);
+    opacity: 0;
+    transition: opacity var(--t);
+    pointer-events: none;
+}
+
+.lesson-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+    border-color: rgba(124, 108, 255, 0.5);
+}
+
+.lesson-card:hover::after {
+    opacity: 1;
+}
+
+.lesson-stage {
+    font-size: 0.72rem;
+    opacity: 0.5;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.lesson-card h3 {
+    font-size: 1.02rem;
+    font-weight: 600;
+}
+
+.lesson-card p {
+    font-size: 0.84rem;
+    opacity: 0.6;
+    line-height: 1.5;
+}

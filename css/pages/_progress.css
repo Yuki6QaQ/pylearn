@@ -1,0 +1,60 @@
+.progress-card {
+    padding: 32px;
+    text-align: center;
+}
+
+.progress-text {
+    opacity: 0.7;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.progress-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.progress-list-card {
+    margin-top: 24px;
+    padding: 28px;
+}
+
+.progress-list-card h3 {
+    font-size: 1.05rem;
+    margin-bottom: 16px;
+    opacity: 0.85;
+}
+
+.done-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.done-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    background: rgba(124, 108, 255, 0.08);
+    font-size: 0.92rem;
+}
+
+.done-list li::before {
+    content: '✓';
+    color: var(--primary-2);
+    font-weight: 700;
+}
+
+.done-list li.empty {
+    background: transparent;
+    opacity: 0.55;
+}
+
+.done-list li.empty::before {
+    content: '—';
+    color: currentColor;
+}
