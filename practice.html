@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PyLearn · 练习场</title>
+    <title>PyLearn · 练习闯关</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="stylesheet" href="css/main.css">
 </head>
 
@@ -20,23 +21,22 @@
         <a href="index.html" class="back-link" id="backLink">
             <span class="back-arrow">←</span> 返回首页
         </a>
+
         <section class="section fade-up">
             <div class="section-head">
-                <h2>代码练习场</h2>
-                <p>输入 Python 代码，点击运行查看 print 输出（前端模拟执行）</p>
+                <h2>练习闯关</h2>
+                <p>选择难度，开始挑战。每题都可以运行代码、验证答案、查看参考解答。</p>
             </div>
-            <div class="glass-card practice-card">
-                <label class="practice-label">Python 代码</label>
-                <textarea id="codeInput" class="code-input" rows="12" spellcheck="false">print("Hello, PyLearn!")
-for i in range(3):
-    print("第", i + 1, "行")</textarea>
-                <div class="practice-actions">
-                    <button class="btn btn-primary" id="runCode">▶ 运行</button>
-                    <button class="btn btn-secondary" id="clearCode">清空</button>
-                </div>
-                <label class="practice-label">运行输出</label>
-                <pre class="code-output" id="codeOutput">// 输出将显示在这里</pre>
 
+            <div class="difficulty-tabs">
+                <button class="tab-btn active" data-level="easy">简单</button>
+                <button class="tab-btn" data-level="normal">普通</button>
+                <button class="tab-btn" data-level="hard">困难</button>
+                <button class="tab-btn" data-level="free">自由练习</button>
+            </div>
+
+            <div id="questionArea" class="question-area">
+                <p class="empty-tip">加载中…</p>
             </div>
         </section>
     </main>
@@ -49,6 +49,8 @@ for i in range(3):
     <script src="js/utils/format.js"></script>
     <script src="js/components/theme.js"></script>
     <script src="js/components/nav.js"></script>
+    <script src="js/components/pythonRunner.js"></script>
+    <script src="js/data/practiceQuestions.js"></script>
     <script src="js/pages/practice.js"></script>
     <script src="js/main.js"></script>
 </body>

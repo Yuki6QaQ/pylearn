@@ -1,115 +1,215 @@
-/* 练习场 */
+/* ============================================================
+   PracticePage —— 闯关练习页逻辑
+   ============================================================ */
+
 window.PracticePage = {
+    currentLevel: 'easy',
+
     init() {
-        const runBtn = document.getElementById('runCode');
-        const clearBtn = document.getElementById('clearCode');
-        const input = document.getElementById('codeInput');
-        const output = document.getElementById('codeOutput');
-        if (!runBtn || !input || !output) return;
+        this.bindTabs();
+        this.renderLevel(this.currentLevel);
+    },
 
-        runBtn.addEventListener('click', () => {
-            output.textContent = this.simulate(input.value);
+    bindTabs() {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.currentLevel = btn.dataset.level;
+                this.renderLevel(this.currentLevel);
+            });
+        });
+    },
+
+    renderLevel(level) {
+        const area = document.getElementById('questionArea');
+        const data = window.PracticeQuestions;
+        if (!area || !data) return;
+
+        if (level === 'free') {
+            area.innerHTML = this.renderFreeMode(data.free);
+            this.bindFreeMode();
+            return;
+        }
+
+        const questions = data[level] || [];
+        if (!questions.length) {
+            area.innerHTML = '<p class="empty-tip">该难度暂无题目。</p>';
+            return;
+        }
+
+        area.innerHTML = questions.map((q, i) => this.renderQuestion(q, i + 1)).join('');
+        this.bindQuestionEvents();
+    },
+
+    renderQuestion(q, num) {
+        const answerId = 'ans-' + q.id;
+        return `
+      <div class="question-item" data-id="${q.id}">
+        <div class="question-header">
+          <span class="question-num">第 ${num} 题</span>
+          <h3 class="question-title">${this.escape(q.title)}</h3>
+        </div>
+        <p class="question-desc">${q.desc}</p>
+        <textarea class="question-code" spellcheck="false">${this.escape(q.starterCode)}</textarea>
+        <div class="question-actions">
+          <button class="btn btn-primary btn-run">▶ 运行</button>
+          <button class="btn btn-success btn-check">✓ 验证答案</button>
+          <button class="btn btn-secondary btn-answer">💡 查看解答</button>
+          <button class="btn btn-secondary btn-reset">重置</button>
+          <span class="question-status"></span>
+        </div>
+        <pre class="question-output">// 运行结果将显示在这里</pre>
+        <div class="question-answer" id="${answerId}" style="display:none">
+          <div class="answer-head">参考解答</div>
+          <pre class="answer-code">${this.escape(q.answer)}</pre>
+        </div>
+      </div>
+    `;
+    },
+
+    bindQuestionEvents() {
+        document.querySelectorAll('.question-item').forEach(item => {
+            const id = item.dataset.id;
+            const q = this.findQuestion(id);
+            if (!q) return;
+
+            const codeEl = item.querySelector('.question-code');
+            const outputEl = item.querySelector('.question-output');
+            const statusEl = item.querySelector('.question-status');
+            const runBtn = item.querySelector('.btn-run');
+            const checkBtn = item.querySelector('.btn-check');
+            const answerBtn = item.querySelector('.btn-answer');
+            const resetBtn = item.querySelector('.btn-reset');
+            const answerEl = item.querySelector('.question-answer');
+            const originalCode = codeEl.value;
+
+            const setStatus = (text, type) => {
+                statusEl.textContent = text;
+                statusEl.className = 'question-status' + (type ? ' is-' + type : '');
+            };
+
+            runBtn.addEventListener('click', async () => {
+                runBtn.disabled = true;
+                setStatus('', '');
+                await window.PythonRunner.run(codeEl.value, outputEl, statusEl);
+                runBtn.disabled = false;
+            });
+
+            checkBtn.addEventListener('click', async () => {
+                checkBtn.disabled = true;
+                setStatus('检查中…', '');
+                const result = await window.PythonRunner.run(codeEl.value, outputEl, null);
+                const ok = this.verify(result.output, codeEl.value, q.check);
+                if (ok) {
+                    setStatus('✓ 通过！', 'ok');
+                    outputEl.textContent += '\n\n✓ 答案验证通过';
+                } else {
+                    setStatus('✗ 未通过，再试试', 'fail');
+                    outputEl.textContent += '\n\n✗ 答案未通过验证，可点击「查看解答」参考';
+                }
+                checkBtn.disabled = false;
+            });
+
+            answerBtn.addEventListener('click', () => {
+                const show = answerEl.style.display === 'none';
+                answerEl.style.display = show ? 'block' : 'none';
+                answerBtn.textContent = show ? '🙈 隐藏解答' : '💡 查看解答';
+            });
+
+            resetBtn.addEventListener('click', () => {
+                codeEl.value = originalCode;
+                outputEl.textContent = '// 运行结果将显示在这里';
+                setStatus('', '');
+                answerEl.style.display = 'none';
+                answerBtn.textContent = '💡 查看解答';
+            });
+
+            codeEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    const start = codeEl.selectionStart;
+                    const end = codeEl.selectionEnd;
+                    codeEl.value = codeEl.value.slice(0, start) + '    ' + codeEl.value.slice(end);
+                    codeEl.selectionStart = codeEl.selectionEnd = start + 4;
+                }
+            });
+        });
+    },
+
+    renderFreeMode(free) {
+        return `
+      <div class="question-item free-mode">
+        <div class="question-header">
+          <span class="question-num">自由练习</span>
+        </div>
+        <p class="question-desc">${free.desc}</p>
+        <textarea class="question-code" spellcheck="false">${this.escape(free.starterCode)}</textarea>
+        <div class="question-actions">
+          <button class="btn btn-primary btn-run">▶ 运行</button>
+          <button class="btn btn-secondary btn-reset">重置</button>
+          <span class="question-status"></span>
+        </div>
+        <pre class="question-output">// 运行结果将显示在这里</pre>
+      </div>
+    `;
+    },
+
+    bindFreeMode() {
+        const item = document.querySelector('.free-mode');
+        if (!item) return;
+        const codeEl = item.querySelector('.question-code');
+        const outputEl = item.querySelector('.question-output');
+        const statusEl = item.querySelector('.question-status');
+        const runBtn = item.querySelector('.btn-run');
+        const resetBtn = item.querySelector('.btn-reset');
+        const originalCode = codeEl.value;
+
+        runBtn.addEventListener('click', async () => {
+            runBtn.disabled = true;
+            statusEl.textContent = '';
+            await window.PythonRunner.run(codeEl.value, outputEl, statusEl);
+            runBtn.disabled = false;
         });
 
-        clearBtn.addEventListener('click', () => {
-            input.value = '';
-            output.textContent = '// 输出将显示在这里';
+        resetBtn.addEventListener('click', () => {
+            codeEl.value = originalCode;
+            outputEl.textContent = '// 运行结果将显示在这里';
+            statusEl.textContent = '';
+        });
+
+        codeEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = codeEl.selectionStart;
+                const end = codeEl.selectionEnd;
+                codeEl.value = codeEl.value.slice(0, start) + '    ' + codeEl.value.slice(end);
+                codeEl.selectionStart = codeEl.selectionEnd = start + 4;
+            }
         });
     },
 
-    /* 简单模拟：识别 print(...) 和 for i in range(n) 循环 */
-    simulate(code) {
-        const lines = code.split('\n');
-        const out = [];
-        let i = 0;
-
-        while (i < lines.length) {
-            const line = lines[i];
-            const trimmed = line.trim();
-
-            // 跳过注释和空行
-            if (!trimmed || trimmed.startsWith('#')) { i++; continue; }
-
-            // 处理 for i in range(n):
-            const forMatch = trimmed.match(/^for\s+(\w+)\s+in\s+range\s*\(\s*(\d+)\s*\)\s*:/);
-            if (forMatch) {
-                const [, varname, nStr] = forMatch;
-                const n = parseInt(nStr, 10);
-                // 收集缩进的循环体
-                const body = [];
-                let j = i + 1;
-                while (j < lines.length && /^\s+/.test(lines[j])) {
-                    body.push(lines[j].replace(/^\s{2,4}/, ''));
-                    j++;
-                }
-                for (let k = 0; k < n; k++) {
-                    body.forEach(bLine => {
-                        const expr = this.evalPrint(bLine, { [varname]: k });
-                        if (expr !== null) out.push(expr);
-                    });
-                }
-                i = j;
-                continue;
-            }
-
-            // 处理普通 print
-            const printMatch = trimmed.match(/^print\s*\((.*)\)\s*$/);
-            if (printMatch) {
-                const expr = this.evalPrint(trimmed);
-                if (expr !== null) out.push(expr);
-            }
-
-            i++;
-        }
-
-        if (!out.length) return '(没有检测到 print 输出)';
-        return out.join('\n');
+    findQuestion(id) {
+        const data = window.PracticeQuestions;
+        const all = [...(data.easy || []), ...(data.normal || []), ...(data.hard || [])];
+        return all.find(q => q.id === id);
     },
 
-    /* 尽量模拟 print 输出 */
-    evalPrint(line, vars = {}) {
-        const m = line.match(/print\s*\((.*)\)/);
-        if (!m) return null;
-        let argStr = m[1];
-
-        // 拆分逗号分隔的参数（不考虑嵌套，简化处理）
-        const args = this.splitArgs(argStr);
-        const values = args.map(a => this.evalArg(a.trim(), vars));
-        return values.join(' ');
+    verify(output, code, check) {
+        if (!check) return !!output && !output.includes('❌');
+        if (typeof check === 'function') return !!check(output, code);
+        if (Array.isArray(check)) return check.every(kw => output.includes(kw));
+        if (typeof check === 'object') {
+            let ok = true;
+            if (Array.isArray(check.output)) ok = ok && check.output.every(kw => output.includes(kw));
+            if (Array.isArray(check.code)) ok = ok && check.code.every(kw => code.includes(kw));
+            if (Array.isArray(check.notOutput)) ok = ok && check.notOutput.every(kw => !output.includes(kw));
+            return ok;
+        }
+        return false;
     },
 
-    splitArgs(s) {
-        const out = [];
-        let depth = 0, cur = '', inStr = false, quote = '';
-        for (const ch of s) {
-            if (inStr) {
-                cur += ch;
-                if (ch === quote) inStr = false;
-                continue;
-            }
-            if (ch === '"' || ch === "'") { inStr = true; quote = ch; cur += ch; continue; }
-            if (ch === '(') depth++;
-            if (ch === ')') depth--;
-            if (ch === ',' && depth === 0) { out.push(cur); cur = ''; continue; }
-            cur += ch;
-        }
-        if (cur.trim()) out.push(cur);
-        return out;
-    },
-
-    evalArg(a, vars) {
-        if (!a) return '';
-        // 字符串
-        if (/^["'].*["']$/.test(a)) return a.slice(1, -1);
-        // 变量
-        if (vars[a] !== undefined) return String(vars[a]);
-        // 数字运算
-        try {
-            // eslint-disable-next-line no-new-func
-            const result = Function('vars', `with(vars){ return (${a}); }`)(vars);
-            return String(result);
-        } catch {
-            return a;
-        }
+    escape(str) {
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 };
